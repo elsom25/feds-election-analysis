@@ -13,19 +13,21 @@ Bundler.require :default
 #
 # Initial Usage:
 #
-# 	election_data = ElectionData.new( CSV_FILE_ARR, TXT_FILE_ARR )
+#   election_data = ElectionData.new( CSV_FILE_ARR, TXT_FILE_ARR )
 #
 # Get the table to play with:
-# 	table = election_data.election_data_table
+#
+#    table = election_data.election_data_table
 #
 # Write the table out to file:
+#
 #   election_data.create_csv
 #
 class ElectionData
 
   attr_reader :election_data_table
 
-	def initialize(voters_list, results_list)
+  def initialize(voters_list, results_list)
     raise 'voters_list must be an Array.' unless voters_list.is_a? Array
     raise 'results_list must be an Array.' unless results_list.is_a? Array
 
