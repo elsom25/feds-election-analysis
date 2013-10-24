@@ -7,7 +7,7 @@ require 'rubygems'
 require 'bundler/setup'
 Bundler.require :default
 
-# Reads in inconsistent data and builds workable dataset.
+# Reads in imperfect election data and builds workable dataset.
 #
 # - - - - - U S A G E - - - - -
 #
