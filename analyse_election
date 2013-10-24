@@ -27,15 +27,16 @@ class Parser
       opts.separator 'Required options:'
 
       # Mandatory argument.
-      opts.on('-v', '--voters X,Y,Z', Array,
+      opts.on('-v', '--voters X.csv,Y.csv,Z.csv', Array,
               'Required. The files that collectively create the voters list.',
               '  Example: member_list_1.csv,member_list_2.csv') do |list|
         options.voter_list = list
       end
 
       # Mandatory argument.
-      opts.on('-r', '--results RESULTS',
-              'Required. The results to be analysed.') do |res|
+      opts.on('-r', '--results X.txt,Y.txt,Z.txt', Array,
+              'Required. The files that collectively create the results.',
+              '  Example: results_1.txt,results_2.txt') do |res|
         options.results = res
       end
 
@@ -61,7 +62,7 @@ class Parser
     raise OptionParser::MissingArgument, "no 'results' option specified  as a parameter" if options.results.nil?
 
     # do stuff
-    data = ElectionData.new(voter_list: options.voter_list, results: options.results).create_lookup
+    data = ElectionData.new(options.voter_list, options.results).create_lookup
     options
   end
 end
