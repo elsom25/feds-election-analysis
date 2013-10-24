@@ -33,13 +33,9 @@ class ElectionData
 
     build_table
     import_voter_lists
+    import_results_lists
 
-
-    pp @results_list_file
-    # pp open(@results, &:read)
-
-    # pp @election_data.all
-
+    @election_data
   end
 
 protected
@@ -68,6 +64,9 @@ protected
       String  :academic_plan
       String  :term
       String  :campus
+
+      String  :ip
+      String  :vote_time
     end
     @election_data = @@DB[:election_data]
   end
@@ -75,7 +74,7 @@ protected
   def import_voter_lists
     # need to nuke the first line, since it interfears with headers
     @voter_list_files = @voter_list_files.map do |input|
-      output = "__TEMP__#{input}"
+      output = "#{input}.tmp"
       system("tail -n +2 #{input} > #{output}") #kinda hacky
       output
     end
@@ -97,6 +96,37 @@ protected
       end
     end
     FileUtils.rm @voter_list_files
+  end
+
+  def import_results_lists
+    file_results = @results_list_file.map do |f|
+      raw_string = open(f, &:read)
+      results_arr = raw_string.scan(/ ([a-zA-Z]\w{3,11}  .*?) ((?= [a-zA-Z]\w{3,11}) | $) /mx).map(&:first)
+    end
+
+    file_results.each do |result|
+      result.each do |data|
+        user_id = find_user_id(data)
+        ip = find_ip(data)
+        vote_datetime = find_vote_datetime(data)
+
+        @election_data.where('user_id = ?', user_id).update( ip: ip, vote_time: vote_datetime)
+      end
+    end
+  end
+
+  def find_user_id(str)
+    str.match(/ [a-zA-Z]\w{3,11} /mx).to_s
+  end
+
+  def find_ip(str)
+    raw_ip = str.match(/ \[ (.*) \] /mx)
+    raw_ip[1].to_s if raw_ip
+  end
+
+  def find_vote_datetime(str)
+    raw_vote_datetime = str.match(/ at\ (.*) /mx)
+    DateTime.parse( raw_vote_datetime.to_s ) if raw_vote_datetime
   end
 
 end

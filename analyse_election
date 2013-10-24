@@ -61,12 +61,12 @@ class Parser
     raise OptionParser::MissingArgument, "no 'voter_list' option specified  as a parameter" if options.voter_list.nil?
     raise OptionParser::MissingArgument, "no 'results' option specified  as a parameter" if options.results.nil?
 
-    # do stuff
-    data = ElectionData.new(options.voter_list, options.results).create_lookup
     options
   end
 end
 
 options = Parser.parse(ARGV)
-pp ARGV
 pp options
+
+data = ElectionData.new(options.voter_list, options.results).create_lookup
+pp data
