@@ -1,0 +1,81 @@
+#!/usr/bin/env ruby
+
+# Written by: Jesse McGinnis
+# License: MIT
+#
+# Parses election data given student voter lists and election meta-data to
+#   better understand voter behaviour.
+
+# =============================================================================
+# Load dependencies
+# -----------------------------------------------------------------------------
+
+# @see: http://stackoverflow.com/a/5998961/192196
+$LOAD_PATH.unshift File.dirname(__FILE__)
+
+# library files
+# require 'rubygems'
+# require 'bundler/setup'
+# Bundler.require :default
+
+require 'optparse'
+require 'optparse/time'
+require 'ostruct'
+require 'pp'
+
+# =============================================================================
+# Application
+# -----------------------------------------------------------------------------
+
+class Parser
+  def self.parse(args)
+    options = OpenStruct.new
+
+    opt_parser = OptionParser.new do |opts|
+      opts.banner = "Usage: #{opts.program_name} [options]"
+
+      opts.separator ''
+      opts.separator 'Required options:'
+
+      # Mandatory argument.
+      opts.on('-v', '--voters X,Y,Z', Array,
+              'Required. The files that collectively create the voters list.',
+              '  Example: member_list_1.csv,member_list_2.csv') do |list|
+        options.voter_list = list
+      end
+
+      # Mandatory argument.
+      opts.on('-r', '--results RESULTS',
+              'Required. The results to be analysed.') do |res|
+        options.results = res
+      end
+
+      opts.separator ''
+      opts.separator 'Common options:'
+
+      # No argument, shows at tail.  This will print an options summary.
+      # Try it and see!
+      opts.on_tail('-h', '--help', 'Show this message') do
+        puts opts
+        exit
+      end
+
+      # Another typical switch to print the version.
+      opts.on_tail('--version', 'Show version') do
+        puts OptionParser::Version.join('.')
+        exit
+      end
+    end
+    opt_parser.parse!(args)
+
+    raise OptionParser::MissingArgument, "no 'voter_list' option specified  as a parameter" if options.voter_list.nil?
+    raise OptionParser::MissingArgument, "no 'results' option specified  as a parameter" if options.results.nil?
+
+    # do stuff
+    options
+  end
+end
+
+options = Parser.parse(ARGV)
+pp ARGV
+pp options
