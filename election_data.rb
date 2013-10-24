@@ -14,19 +14,18 @@ Bundler.require :default
 # Initial Usage:
 #
 # 	election_data = ElectionData.new( CSV_FILE_ARR, TXT_FILE_ARR )
-# 	table = election_data.create_table
 #
-# 	...or...
+# Get the table to play with:
+# 	table = election_data.election_data_table
 #
-# 	election_data = InvariantPairTable.new
-# 	table = election_data.create_table( CSV_FILE_ARR, TXT_FILE_ARR )
+# Write the able out to file:
+#   election_data.create_csv
+#
 class ElectionData
 
-	def initialize(voters_list=nil, results_list=nil)
-    setup(voters_list, results_list) if voters_list && results_list
-  end
+  attr_reader :election_data_table
 
-  def create_lookup(voters_list=nil, results_list=nil)
+	def initialize(voters_list=nil, results_list=nil)
     setup(voters_list, results_list) if voters_list && results_list
     raise 'You must provide `voter_list`.' unless @voter_list_files
     raise 'You must provide `results_list`.' unless @results_list_file
@@ -34,16 +33,14 @@ class ElectionData
     build_table
     import_voter_lists
     import_results_lists
-
-    @election_data
   end
 
   def create_csv(file_name='__election_data.csv')
     CSV.open( file_name, 'w',
               write_headers: true,
-              headers: @election_data.columns.map(&:to_s)
+              headers: @election_data_table.columns.map(&:to_s)
              ) do |csv_out|
-      @election_data.each do |row|
+      @election_data_table.each do |row|
         csv_out << row.to_a.transpose.last
       end
     end
@@ -79,7 +76,7 @@ protected
       String  :ip
       String  :vote_time
     end
-    @election_data = @@DB[:election_data]
+    @election_data_table = @@DB[:election_data]
   end
 
   def import_voter_lists
@@ -92,7 +89,7 @@ protected
 
     @voter_list_files.each do |f|
       CSV.foreach(f, headers: :first_row) do |row|
-        @election_data.insert(
+        @election_data_table.insert(
              student_id: row['Student ID'],
                 user_id: row['User'],
              first_name: row['First Name'],
@@ -121,7 +118,7 @@ protected
         ip = find_ip(data)
         vote_datetime = find_vote_datetime(data)
 
-        @election_data.where('user_id = ?', user_id).update( ip: ip, vote_time: vote_datetime)
+        @election_data_table.where('user_id = ?', user_id).update( ip: ip, vote_time: vote_datetime)
       end
     end
   end
