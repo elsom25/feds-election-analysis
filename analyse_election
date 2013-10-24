@@ -1,11 +1,5 @@
 #!/usr/bin/env ruby
 
-# Written by: Jesse McGinnis
-# License: MIT
-#
-# Parses election data given student voter lists and election meta-data to
-#   better understand voter behaviour.
-
 # =============================================================================
 # Load dependencies
 # -----------------------------------------------------------------------------
@@ -32,7 +26,7 @@ class Parser
     options = OpenStruct.new
 
     opt_parser = OptionParser.new do |opts|
-      opts.banner = "Usage: #{opts.program_name} [options]"
+      opts.banner = "Parses election data given student voter lists and election meta-data to better understand\nvoter behaviour.\n\nUsage: #{opts.program_name} [options]"
 
       opts.separator ''
       opts.separator 'Required options:'
