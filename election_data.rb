@@ -18,7 +18,7 @@ Bundler.require :default
 # Get the table to play with:
 # 	table = election_data.election_data_table
 #
-# Write the able out to file:
+# Write the table out to file:
 #   election_data.create_csv
 #
 class ElectionData
