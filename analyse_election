@@ -6,16 +6,11 @@
 
 # @see: http://stackoverflow.com/a/5998961/192196
 $LOAD_PATH.unshift File.dirname(__FILE__)
-
-# library files
-# require 'rubygems'
-# require 'bundler/setup'
-# Bundler.require :default
-
 require 'optparse'
-require 'optparse/time'
 require 'ostruct'
 require 'pp'
+
+require 'election_data'
 
 # =============================================================================
 # Application
@@ -66,6 +61,7 @@ class Parser
     raise OptionParser::MissingArgument, "no 'results' option specified  as a parameter" if options.results.nil?
 
     # do stuff
+    data = ElectionData.new(voter_list: options.voter_list, results: options.results).create_lookup
     options
   end
 end
