@@ -61,8 +61,6 @@ class Parser
 end
 
 options = Parser.parse(ARGV)
-pp options
 
 election_data = ElectionData.new(options.voter_list, options.results)
-table = election_data.election_data_table # a nice table to play with
 election_data.create_csv
