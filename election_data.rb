@@ -38,6 +38,17 @@ class ElectionData
     @election_data
   end
 
+  def create_csv(file_name='__election_data.csv')
+    CSV.open( file_name, 'w',
+              write_headers: true,
+              headers: @election_data.columns.map(&:to_s)
+             ) do |csv_out|
+      @election_data.each do |row|
+        csv_out << row.to_a.transpose.last
+      end
+    end
+  end
+
 protected
 
   def setup(voters_list, results_list)

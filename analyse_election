@@ -68,5 +68,6 @@ end
 options = Parser.parse(ARGV)
 pp options
 
-data = ElectionData.new(options.voter_list, options.results).create_lookup
-pp data
+election_data = ElectionData.new(options.voter_list, options.results)
+table = election_data.create_lookup # a nice table to play with
+election_data.create_csv
