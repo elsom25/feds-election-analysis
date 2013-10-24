@@ -25,14 +25,13 @@ class ElectionData
 
   attr_reader :election_data_table
 
-	def initialize(voters_list=nil, results_list=nil)
-    setup(voters_list, results_list) if voters_list && results_list
-    raise 'You must provide `voter_list`.' unless @voter_list_files
-    raise 'You must provide `results_list`.' unless @results_list_file
+	def initialize(voters_list, results_list)
+    raise 'voters_list must be an Array.' unless voters_list.is_a? Array
+    raise 'results_list must be an Array.' unless results_list.is_a? Array
 
     build_table
-    import_voter_lists
-    import_results_lists
+    import_voter_lists(voters_list)
+    import_results_lists(results_list)
   end
 
   def create_csv(file_name='__election_data.csv')
@@ -47,14 +46,6 @@ class ElectionData
   end
 
 protected
-
-  def setup(voters_list, results_list)
-    raise 'voters_list must be an Array.' unless voters_list.is_a? Array
-    raise 'results_list must be an Array.' unless results_list.is_a? Array
-
-    @voter_list_files  = voters_list
-    @results_list_file = results_list
-  end
 
   def build_table
     @@DB = Sequel.sqlite
@@ -79,15 +70,15 @@ protected
     @election_data_table = @@DB[:election_data]
   end
 
-  def import_voter_lists
+  def import_voter_lists(voter_list_files)
     # need to nuke the first line, since it interfears with headers
-    @voter_list_files = @voter_list_files.map do |input|
+    voter_list_files = voter_list_files.map do |input|
       output = "#{input}.tmp"
       system("tail -n +2 #{input} > #{output}") #kinda hacky
       output
     end
 
-    @voter_list_files.each do |f|
+    voter_list_files.each do |f|
       CSV.foreach(f, headers: :first_row) do |row|
         @election_data_table.insert(
              student_id: row['Student ID'],
@@ -103,11 +94,11 @@ protected
         ) rescue next
       end
     end
-    FileUtils.rm @voter_list_files
+    FileUtils.rm voter_list_files
   end
 
-  def import_results_lists
-    file_results = @results_list_file.map do |f|
+  def import_results_lists(file_results)
+    file_results = file_results.map do |f|
       raw_string = open(f, &:read)
       results_arr = raw_string.scan(/ ([a-zA-Z]\w{3,11}  .*?) ((?= [a-zA-Z]\w{3,11}) | $) /mx).map(&:first)
     end
