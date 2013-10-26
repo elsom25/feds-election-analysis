@@ -1,11 +1,11 @@
 # =============================================================================
 # Load dependencies
 # -----------------------------------------------------------------------------
-require 'csv'
-
 require 'rubygems'
 require 'bundler/setup'
 Bundler.require :default
+
+require 'csv'
 
 # Reads in imperfect election data and builds workable dataset.
 #
