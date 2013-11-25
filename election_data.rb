@@ -84,7 +84,7 @@ protected
       CSV.foreach(f, headers: :first_row) do |row|
         @election_data_table.insert(
              student_id: row['Student ID'],
-                user_id: row['User'],
+                user_id: row['User'].upcase,
              first_name: row['First Name'],
             middle_name: row['Middle'],
               last_name: row['Last'],
@@ -111,13 +111,13 @@ protected
         ip = find_ip(data)
         vote_datetime = find_vote_datetime(data)
 
-        @election_data_table.where('user_id = ?', user_id).update( ip: ip, vote_time: vote_datetime)
+        @election_data_table.where('user_id = ?', user_id.upcase).update( ip: ip, vote_time: vote_datetime)
       end
     end
   end
 
   def find_user_id(str)
-    str.match(/ [a-zA-Z]\w{3,11} /mx).to_s
+    str.match(/ [a-zA-Z]\w{3,11} /mx).to_s.upcase
   end
 
   def find_ip(str)
@@ -126,7 +126,7 @@ protected
   end
 
   def find_vote_datetime(str)
-    raw_vote_datetime = str.match(/ at\ (.*) /mx)
+    raw_vote_datetime = str.match(/\s+at (.*)/m)
     DateTime.parse( raw_vote_datetime.to_s ) if raw_vote_datetime
   end
 
